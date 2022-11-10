@@ -1,60 +1,45 @@
 import { promises as fsp } from 'fs';
 import fs from 'fs';
 import path from 'path';
+import StoreLogger from './StoreLogger';
 
 export default class FileStore {
   directory: string;
-  cache: any;
+  logger: StoreLogger;
 
-  constructor(public _directory: string) {
+  constructor(public _directory: string, _logger: StoreLogger) {
     this.directory = _directory;
-    this.cache = {};
+    this.logger = _logger;
   }
 
-  public async save(id: number, message: string) {
+  public async save(id: number, message: string): Promise<any> {
     try {
-      console.log('Saving message:', id);
+      this.logger.saving(id);
 
-      var fileFullName = this.getFileInfo(id);
+      const fileFullName = this.getFile(id);
 
       await fsp.writeFile(fileFullName, message);
 
-      this.cache[id] = message;
-      console.log('Message saved', id);
+      this.logger.saved(id);
     } catch (error) {
-      console.error('There was an error: ', error);
+      this.logger.errorSaving(id);  
     }
   }
 
   public read(id: number): string {
-    console.log('Reading message:', id);
-    var fileFullName = this.getFileInfo(id);
-
-    var exists = fs.existsSync(fileFullName);
-    console.log('File exists: ', exists);
+    this.logger.readingFilestore(id);
+    const fileFullName = this.getFile(id);
+    const exists = fs.existsSync(fileFullName);
 
     if (!exists) {
-      console.log(`No message ${id} found`);
+      this.logger.didNotFind(id);
       return '';
     }
 
-    if (!this.cache.hasOwnProperty(id)) {
-      console.info(`Message id ${id} not in cache`);
-      var data = fs.readFileSync(fileFullName);
-      this.cache[id] = data;
-    }
-
-    var message = this.cache[id];
-    console.log(`Returning message ${id}`);
-
-    return message;
+    return fs.readFileSync(fileFullName, { encoding: 'ascii' });
   }
 
-  public checkCache() {
-    return this.cache;
-  }
-
-  private getFileInfo(id: number): string {
+  private getFile(id: number): string {
     return path.join(__dirname, this.directory, `${id}.txt`);
   }
 }
