@@ -2,8 +2,9 @@ import { promises as fsp } from 'fs';
 import fs from 'fs';
 import path from 'path';
 import StoreLogger from './StoreLogger';
+import IStore from './IStore';
 
-export default class FileStore {
+export default class FileStore implements IStore {
   directory: string;
   logger: StoreLogger;
 
@@ -22,7 +23,7 @@ export default class FileStore {
 
       this.logger.saved(id);
     } catch (error) {
-      this.logger.errorSaving(id);  
+      this.logger.errorSaving(id);
     }
   }
 
@@ -30,7 +31,7 @@ export default class FileStore {
     this.logger.readingFilestore(id);
 
     const fileFullName = this.getFile(id);
-    
+
     const exists = fs.existsSync(fileFullName);
 
     if (!exists) {
@@ -41,7 +42,7 @@ export default class FileStore {
     return fs.readFileSync(fileFullName, { encoding: 'ascii' });
   }
 
-  private getFile(id: number): string {
+  public getFile(id: number): string {
     return path.join(__dirname, this.directory, `${id}.txt`);
   }
 }
