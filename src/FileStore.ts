@@ -28,7 +28,9 @@ export default class FileStore {
 
   public read(id: number): string {
     this.logger.readingFilestore(id);
+
     const fileFullName = this.getFile(id);
+    
     const exists = fs.existsSync(fileFullName);
 
     if (!exists) {

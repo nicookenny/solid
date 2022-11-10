@@ -13,6 +13,10 @@ export default class MessageStore {
     this.cache = new StoreCache(this.logger);
   }
 
+  get Logger() {
+    return this.logger;
+  }
+
   public async save(id: number, message: string) {
     await this.filestore.save(id, message);
     this.cache.addOrUpdate(id, message);
