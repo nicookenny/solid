@@ -1,4 +1,4 @@
-import IStore from './IStore';
+import IStore from '../interfaces/IStore';
 
 export default class SqlStore implements IStore {
   save(id: number, message: string): void {}

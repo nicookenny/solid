@@ -2,9 +2,11 @@ import { promises as fsp } from 'fs';
 import fs from 'fs';
 import path from 'path';
 import StoreLogger from './StoreLogger';
-import IStore from './IStore';
+import IStore from './interfaces/IStore';
+import IFileLocator from './interfaces/IFileLocator';
+import IStoreWriter from './interfaces/IStoreWriter';
 
-export default class FileStore implements IStore {
+export default class FileStore implements IStore, IStoreWriter, IFileLocator {
   directory: string;
   logger: StoreLogger;
 
